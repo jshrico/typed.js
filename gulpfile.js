@@ -9,17 +9,18 @@ const gulpDocumentation = require('gulp-documentation');
 const eslint = require('gulp-eslint');
 const server = require('gulp-express');
 
-gulp.task('lint', () => {
-	return gulp.src('src/*.js')
-		// default: use local linting config
-		.pipe(eslint())
-		// format ESLint results and print them to the console
-		.pipe(eslint.format())
-    .pipe(eslint.failAfterError());
-});
 
-gulp.task('build', () => {
+function lint() {
   return gulp.src('src/*.js')
+    // default: use local linting config
+    .pipe(eslint())
+    // format ESLint results and print them to the console
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError());  
+}
+
+function build() {
+    return gulp.src('src/*.js')
     .pipe(webpack(require('./webpack.config.js')))
     .pipe(gulp.dest('./lib'))
     .pipe(sourcemaps.init({ loadMaps: true }))
@@ -35,24 +36,24 @@ gulp.task('build', () => {
     .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest('lib/'))
     .pipe(livereload());
-});
+}
 
-gulp.task('md-docs', () => {
-  return gulp.src('./src/*.js')
+function docs() {
+    return gulp.src('./src/*.js')
     .pipe(gulpDocumentation('md'))
     .pipe(gulp.dest('docs'));
-});
+}
 
-gulp.task('html-docs', () => {
+function htmlDocs() {
   return gulp.src('./src/*.js')
     .pipe(gulpDocumentation('html'), {}, {
       name: 'Typed.js Docs',
       version: '2.0.9'
     })
     .pipe(gulp.dest('docs'));
-});
+}
 
-gulp.task('server', function () {
+function runServer() {
   // Start the server at the beginning of the task
   server.run(['app.js']);
   // Restart the server when file changes
@@ -70,21 +71,23 @@ gulp.task('server', function () {
 
   gulp.watch(['docs/scripts/**/*.js'], ['jshint']);
   gulp.watch(['docs/images/**/*'], server.notify);
-});
+}
 
-gulp.task('serve', [
-  'watch',
-  'server'
-]);
-
-// Watch Task
-gulp.task('watch', () => {
+function watch() {
   livereload({ start: true });
   gulp.watch('src/*.js', ['md-docs', 'html-docs', 'default']);
-});
+}
 
-gulp.task('default', [
-  'lint',
-  'build',
-]);
+function clean(done) {
+  del.sync([dir.build]);
+  done();
+}
 
+gulp.task('lint', gulp.series(lint));
+gulp.task('serve', gulp.series(watch, runServer));
+gulp.task('server', gulp.series(runServer));
+gulp.task('md-docs', gulp.series(docs));
+gulp.task('html-docs', gulp.series(htmlDocs));
+gulp.task('watch', gulp.series(watch));
+gulp.task('default', gulp.series(build));
+gulp.task('clean', gulp.series(clean));
