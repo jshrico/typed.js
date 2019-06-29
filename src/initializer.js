@@ -98,6 +98,10 @@ export default class Initializer {
     // index of string to stop backspacing on
     self.stopNum = 0;
 
+    // set custom index of string to stop backspacing on
+    self.customStop = self.options.customStop;
+    self.customStopNum = self.options.customStopNum;
+
     // Looping logic
     self.loop = self.options.loop;
     self.loopCount = self.options.loopCount;

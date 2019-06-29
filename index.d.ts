@@ -81,6 +81,15 @@ declare module 'typed.js' {
      * 'html' or 'null' for plaintext
      */
     contentType?: string;
+
+    /**
+     * custom index of string instead of always 0
+     */
+    customStop?: boolean;
+    /**
+     * custom index of string to stop backspacing on
+     */
+    customStopNumber?: number;
     /**
      * All typing is complete
      */
