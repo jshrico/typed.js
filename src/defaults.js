@@ -84,6 +84,13 @@ const defaults = {
   contentType: 'html',
 
   /**
+   * @property {boolean} customStop custom stopNum instead of always 0
+   * @property {number} customStopNum custom index of string to stop backspacing on
+   */
+  customStop: false,
+  customStopNum: 5,
+
+  /**
    * All typing is complete
    * @param {Typed} self
    */

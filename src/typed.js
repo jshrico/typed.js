@@ -86,7 +86,7 @@ export default class Typed {
    * Begins the typing animation
    * @private
    */
-  begin() {
+  begin(curStrPos) {
     this.typingComplete = false;
     this.shuffleStringsIfNeeded(this);
     this.insertCursor();
@@ -94,7 +94,8 @@ export default class Typed {
     this.timeout = setTimeout(() => {
       // Check if there is some text in the element, if yes start by backspacing the default message
       if (!this.currentElContent || this.currentElContent.length === 0) {
-        this.typewrite(this.strings[this.sequence[this.arrayPos]], this.strPos);
+        // eslint-disable-next-line no-unneeded-ternary
+        this.typewrite(this.strings[this.sequence[this.arrayPos]], curStrPos ? curStrPos : this.strPos);
       } else {
         // Start typing
         this.backspace(this.currentElContent, this.currentElContent.length);
@@ -244,6 +245,8 @@ export default class Typed {
     this.toggleBlinking(false);
     const humanize = this.humanizer(this.backSpeed);
 
+    // replace index of string to stop backspacing on
+    this.stopNum = this.customStop ? this.customStopNum : 0;
     this.timeout = setTimeout(() => {
       curStrPos = htmlParser.backSpaceHtmlChars(curString, curStrPos, this);
       // replace text with base text + typed characters
@@ -277,7 +280,7 @@ export default class Typed {
           this.arrayPos = 0;
           this.options.onLastStringBackspaced();
           this.shuffleStringsIfNeeded();
-          this.begin();
+          this.begin(curStrPos);
         } else {
           this.typewrite(this.strings[this.sequence[this.arrayPos]], curStrPos);
         }
